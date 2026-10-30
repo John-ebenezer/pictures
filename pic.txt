@@ -1,0 +1,876 @@
+OPERATING SYSTEMS LAB — COMPLETE EXPERIMENT PROGRAMS
+Shell Scripting, C and C++
+Prepared from the OS lab materials shared in this conversation.
+
+CONTENTS
+Experiment 2  - Basic Linux shell commands
+Experiment 3  - Shell script for file operations
+Experiment 4  - Arithmetic operations
+Experiment 5  - Conditional statements
+Experiment 6  - Loop statements (two complete while-loop-only patterns)
+Experiment 7  - case/esac menu-driven unit converter
+Experiment 8  - FCFS CPU scheduling (C)
+Experiment 9A - Priority scheduling, non-preemptive (C)
+Experiment 9B - Priority scheduling, preemptive (C)
+Experiment 10A - SJF scheduling, non-preemptive (C)
+Experiment 10B - SJF/SRTF scheduling, preemptive (C)
+Experiment 11 - LRU page replacement (C)
+Experiment 12 - LRU page replacement (C++)
+Experiment 14 - Process synchronization pseudocode
+
+RUN COMMANDS
+Shell:
+    chmod +x program.sh
+    ./program.sh
+    OR
+    bash program.sh
+
+C:
+    gcc program.c -o program
+    ./program
+
+C++:
+    g++ program.cpp -o program
+    ./program
+
+NOTE
+Experiment 2 is a command demonstration, not a single shell script.
+Experiment 14 asks for pseudocode in the supplied manual.
+Experiment 13 was not included in the uploaded materials.
+Experiment 6 below has been corrected to match your uploaded manual:
+two patterns, both using while loops only.
+
+============================================================
+
+OS LAB PRACTICAL — PROGRAM BOOKLET
+ Shell scripting and C/C++ programs | Based on your uploaded OS Lab manuals
+How to use: Each experiment has a compact, runnable program and the key commands to execute it. The source manuals'
+experiment numbers and topics are retained. Experiment 2 is a command demonstration (not a shell script). Experiment 14
+asks for pseudocode, not a compiled C program.
+Important: A few source-manual examples contain arithmetic/output inconsistencies. The circle formula and arithmetic in this
+booklet use the mathematically correct result; the gross-salary DA is kept at 165% because that is what the manual states.
+Confirm any instructor-specific expected convention.
+Quick compile/run commands
+# Shell script
+chmod +x program.sh
+./program.sh
+# or: bash program.sh
+# C program
+gcc program.c -o program
+./program
+# C++ program
+g++ program.cpp -o program
+./program
+CONTENTS
+ Shell: Exp 2 Basic Commands; Exp 3 File Operations; Exp 4 Arithmetic; Exp 5 Conditions; Exp 6 Loops; Exp 7 case/esac
+menu
+ C: Exp 8 FCFS; Exp 9 Priority (non-preemptive and preemptive); Exp 10 SJF (non-preemptive and SRTF); Exp 11 LRU
+ C++: Exp 12 LRU; Exp 14 Process Synchronization (pseudocode: Producer–Consumer, Readers–Writers, Test-and-Set)
+
+
+============================================================================
+
+Experiment 2 — Basic Shell Commands
+Aim: demonstrate basic Linux shell commands. Run these individually in the Ubuntu terminal.
+pwd                 # print current working directory
+ls                  # list files and directories
+cd Documents        # change directory
+mkdir os_practice   # create a directory
+touch a.txt         # create an empty file
+echo "Hello" > a.txt
+cat a.txt           # display file content
+cp a.txt copy.txt   # copy file
+mv copy.txt new.txt # rename/move file
+rm new.txt          # remove file
+who                 # logged-in users
+date                # current date and time
+tty                 # terminal device
+ps                  # current processes
+history             # command history
+head -n 5 a.txt     # first five lines
+tail -n 5 a.txt     # last five lines
+sort a.txt          # sort lines
+wc a.txt            # line, word, byte counts
+man ls              # manual page
+time ls             # execution time
+bc                  # command-line calculator
+Remember: > overwrites a file; >> appends. cp copies; mv moves/renames; rm deletes.
+
+
+============================================================================
+
+Experiment 3 — Basic Shell Script for File Operations
+Creates a file, accepts text, counts/sorts/transforms it, manipulates strings, renames and deletes the file.
+#!/bin/bash
+echo "=== File Operations ==="
+echo -n "Enter filename: "
+read fname
+touch "$fname"
+echo "Enter file content; press Ctrl+D when finished:"
+cat > "$fname"
+echo "Line/word/byte count:"
+wc "$fname"
+echo "Sorted content:"
+sort "$fname"
+echo "Uppercase content:"
+tr 'a-z' 'A-Z' < "$fname"
+echo -n "Enter a string for length: "
+read str
+echo "Length = ${#str}"
+echo -n "First string: "
+read s1
+echo -n "Second string: "
+read s2
+concat="$s1$s2"
+echo "Concatenated = $concat"
+echo -n "String to extract from: "
+read src
+echo -n "Start index (0-based): "
+read start
+echo -n "Length: "
+read len
+echo "Substring = ${src:$start:$len}"
+echo -n "String to reverse: "
+read revstr
+echo "Reversed = $(echo "$revstr" | rev)"
+echo -n "New filename: "
+read newname
+mv "$fname" "$newname"
+echo "Renamed to $newname"
+rm -f "$newname"
+echo "File deleted."
+Run: save as fileops.sh, then chmod +x fileops.sh && ./fileops.sh. The final rm line deletes the renamed file.
+
+
+============================================================================
+
+Experiment 4 — Arithmetic Operations
+Four parts: basic arithmetic, circle area/perimeter, gross salary and mean salary.
+#!/bin/bash
+echo "=== Basic Arithmetic ==="
+echo "Enter two integers:"
+read a
+read b
+echo "Addition = $((a+b))"
+echo "Subtraction = $((a-b))"
+echo "Multiplication = $((a*b))"
+if [ "$b" -ne 0 ]; then
+    echo "Division = $((a/b))"
+else
+    echo "Division by zero is not allowed"
+fi
+echo "=== Circle ==="
+echo "Enter radius:"
+read r
+area=$(echo "scale=2; 3.14*$r*$r" | bc)
+peri=$(echo "scale=2; 2*3.14*$r" | bc)
+echo "Area = $area"
+echo "Perimeter = $peri"
+echo "=== Gross Salary ==="
+echo "Enter basic salary:"
+read basic
+da=$(echo "scale=2; $basic*165/100" | bc)
+hra=$(echo "scale=2; $basic*30/100" | bc)
+gross=$(echo "scale=2; $basic+$da+$hra" | bc)
+echo "DA = $da"
+echo "HRA = $hra"
+echo "Gross Salary = $gross"
+echo "=== Mean Salary ==="
+A=1200; B=1400; C=1350; D=1800
+mean=$(echo "scale=2; ($A+$B+$C+$D)/4" | bc)
+echo "Mean Salary = $mean"
+Note: Bash $(( )) performs integer arithmetic. bc is used for decimal calculations. The manual states DA = 165% and HRA =
+30%. For radius 2, correct area = 12.56 and perimeter = 12.56.
+
+
+============================================================================
+
+Experiment 5 — Conditional Statements
+Four tasks: even/odd, largest of three, leap year, and withdrawal tax/balance.
+#!/bin/bash
+echo "Enter a number:"
+read num
+if [ $((num%2)) -eq 0 ]; then
+    echo "$num is Even"
+else
+    echo "$num is Odd"
+fi
+echo "Enter three numbers:"
+read a b c
+if [ "$a" -ge "$b" ] && [ "$a" -ge "$c" ]; then
+    echo "$a is the largest"
+elif [ "$b" -ge "$a" ] && [ "$b" -ge "$c" ]; then
+    echo "$b is the largest"
+else
+    echo "$c is the largest"
+fi
+echo "Enter a year:"
+read year
+if [ $((year%400)) -eq 0 ] || {
+   [ $((year%4)) -eq 0 ] && [ $((year%100)) -ne 0 ]; }; then
+    echo "$year is a Leap Year"
+else
+    echo "$year is not a Leap Year"
+fi
+echo "Enter account balance:"
+read balance
+echo "Enter withdrawal amount:"
+read withdraw
+if [ "$balance" -lt "$withdraw" ]; then
+    echo "Insufficient balance"
+else
+    if [ "$withdraw" -lt 1500 ]; then
+        tax=$(echo "$withdraw*0.03" | bc)
+    elif [ "$withdraw" -ge 1500 ] && [ "$withdraw" -lt 3000 ]; then
+        tax=$(echo "$withdraw*0.04" | bc)
+    else
+        tax=$(echo "$withdraw*0.05" | bc)
+    fi
+    total=$(echo "$withdraw+$tax" | bc)
+    remaining=$(echo "$balance-$total" | bc)
+    echo "Amount withdrawn: $withdraw"
+    echo "Tax deducted: $tax"
+    echo "Remaining balance: $remaining"
+fi
+Operators: -eq equal, -ne not equal, -gt greater, -lt less, -ge greater/equal, -le less/equal. Leap year: divisible by 400 OR
+divisible by 4 but not by 100.
+
+
+============================================================================
+
+OS LAB PRACTICAL — COMPLETE TEXT PROGRAMS
+EXPERIMENT 6 — LOOP STATEMENTS
+Based on the uploaded OS_EXP6_25070122067.pdf (pages 2–6).
+Both programs below use WHILE loops only, matching the two required outputs.
+
+AIM:
+Implement shell scripts to demonstrate loop statements.
+
+PROGRAM 1 — LEFT-ALIGNED INCREASING/DECREASING STAR PATTERN
+Filename: pattern1.sh
+
+#!/bin/bash
+
+echo "Enter value of n:"
+read n
+
+i=1
+while [ $i -le $n ]
+do
+    j=1
+    while [ $j -le $i ]
+    do
+        echo -n "*"
+        j=$(($j+1))
+    done
+    echo
+    i=$(($i+1))
+done
+
+i=$(($n-1))
+while [ $i -ge 1 ]
+do
+    j=1
+    while [ $j -le $i ]
+    do
+        echo -n "*"
+        j=$(($j+1))
+    done
+    echo
+    i=$(($i-1))
+done
+
+SAMPLE OUTPUT (n = 4):
+*
+**
+***
+****
+***
+**
+*
+
+PROGRAM 2 — CENTERED STAR PATTERN
+Filename: pattern2.sh
+
+#!/bin/bash
+
+echo "Enter value of n:"
+read n
+
+i=1
+while [ $i -le $n ]
+do
+    j=1
+    while [ $j -le $((n-i)) ]
+    do
+        echo -n " "
+        j=$(($j+1))
+    done
+
+    j=1
+    while [ $j -le $i ]
+    do
+        echo -n "*"
+        j=$(($j+1))
+    done
+
+    echo
+    i=$(($i+1))
+done
+
+i=$(($n-1))
+while [ $i -ge 1 ]
+do
+    j=1
+    while [ $j -le $((n-i)) ]
+    do
+        echo -n " "
+        j=$(($j+1))
+    done
+
+    j=1
+    while [ $j -le $i ]
+    do
+        echo -n "*"
+        j=$(($j+1))
+    done
+
+    echo
+    i=$(($i-1))
+done
+
+SAMPLE OUTPUT (n = 4):
+   *
+  **
+ ***
+****
+ ***
+  **
+   *
+
+HOW TO RUN:
+chmod +x pattern1.sh
+./pattern1.sh
+
+chmod +x pattern2.sh
+./pattern2.sh
+
+IMPORTANT:
+- Both programs use while loops only. No for loops are used.
+- i controls the rows.
+- j controls the spaces or stars.
+- echo -n prints without moving to a new line.
+- echo moves to the next line.
+- Upper half: i increases from 1 to n.
+- Lower half: i decreases from n-1 to 1.
+
+
+
+============================================================================
+
+Experiment 7 — Switch Statement — case/esac Unit Converter
+Menu-driven converter with temperature, length, weight, history, clear-history and exit options. Uses bc for decimals.
+#!/bin/bash
+HISTORY_FILE="$HOME/unit_converter_history.txt"
+touch "$HISTORY_FILE"
+log_history() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | $1" >> "$HISTORY_FILE"
+}
+show_history() {
+    echo "=== CONVERSION HISTORY ==="
+    if [ ! -s "$HISTORY_FILE" ]; then
+        echo "No conversions yet."
+    else
+        cat -n "$HISTORY_FILE"
+    fi
+}
+while true; do
+    echo "1.Temperature  2.Length  3.Weight"
+    echo "4.Show History  5.Clear History  6.Exit"
+    read -p "Enter choice: " choice
+    case $choice in
+      1)
+        echo "1.Celsius to Fahrenheit  2.Fahrenheit to Celsius"
+        read -p "Sub-choice: " sub
+        case $sub in
+          1) read -p "Celsius: " c
+             f=$(echo "scale=2; $c*9/5+32" | bc)
+             echo "Fahrenheit: $f"
+             log_history "Temperature: ${c}C -> ${f}F" ;;
+          2) read -p "Fahrenheit: " f
+             c=$(echo "scale=2; ($f-32)*5/9" | bc)
+             echo "Celsius: $c"
+             log_history "Temperature: ${f}F -> ${c}C" ;;
+          *) echo "Invalid sub-choice" ;;
+        esac ;;
+      2)
+        echo "1.Kilometers to Miles  2.Miles to Kilometers"
+        read -p "Sub-choice: " sub
+        case $sub in
+          1) read -p "Kilometers: " km
+             miles=$(echo "scale=2; $km*0.621371" | bc)
+             echo "Miles: $miles"
+             log_history "Length: ${km}km -> ${miles}miles" ;;
+          2) read -p "Miles: " miles
+             km=$(echo "scale=2; $miles*1.60934" | bc)
+             echo "Kilometers: $km"
+             log_history "Length: ${miles}miles -> ${km}km" ;;
+          *) echo "Invalid sub-choice" ;;
+        esac ;;
+      3)
+        echo "1.Kilograms to Pounds  2.Pounds to Kilograms"
+        read -p "Sub-choice: " sub
+        case $sub in
+          1) read -p "Kilograms: " kg
+             lbs=$(echo "scale=2; $kg*2.20462" | bc)
+             echo "Pounds: $lbs"
+             log_history "Weight: ${kg}kg -> ${lbs}lbs" ;;
+          2) read -p "Pounds: " lbs
+             kg=$(echo "scale=2; $lbs*0.453592" | bc)
+             echo "Kilograms: $kg"
+             log_history "Weight: ${lbs}lbs -> ${kg}kg" ;;
+          *) echo "Invalid sub-choice" ;;
+        esac ;;
+      4) show_history ;;
+      5) > "$HISTORY_FILE"; echo "History cleared." ;;
+      6) echo "Exiting. Thank you!"; break ;;
+      *) echo "Invalid choice. Please try again." ;;
+    esac
+    echo
+done
+
+
+============================================================================
+
+Experiment 8 — FCFS CPU Scheduling (C)
+First Come First Served. Processes execute in the order entered. Input is burst time only, as in the manual.
+#include <stdio.h>
+int main(void) {
+    int n, i, j, bt[20], wt[20], tat[20];
+    float avgwt = 0, avgtat = 0;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    printf("Enter burst time for each process:\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d: ", i + 1);
+        scanf("%d", &bt[i]);
+    }
+    wt[0] = 0;
+    for (i = 1; i < n; i++) {
+        wt[i] = 0;
+        for (j = 0; j < i; j++)
+            wt[i] += bt[j];
+    }
+    for (i = 0; i < n; i++)
+        tat[i] = bt[i] + wt[i];
+    printf("\nProcess\tBT\tWT\tTAT\n");
+    for (i = 0; i < n; i++) {
+        avgwt += wt[i];
+        avgtat += tat[i];
+        printf("P%d\t%d\t%d\t%d\n", i+1, bt[i], wt[i], tat[i]);
+    }
+    printf("Average WT = %.2f\n", avgwt/n);
+    printf("Average TAT = %.2f\n", avgtat/n);
+    return 0;
+}
+Formulas: WT of first process = 0; WT[i] = sum of previous burst times; TAT = WT + BT. For the manual's BT 24,3,7,13,21:
+average WT = 26.40 and average TAT = 40.00.
+
+
+============================================================================
+
+Experiment 9A — Priority Scheduling — Non-preemptive (C)
+Lower priority number means higher priority. Once a process starts, it runs to completion. Tie-break: earlier arrival.
+#include <stdio.h>
+#define MAX 20
+struct Process { int pid, at, bt, pr, ct, tat, wt, done; };
+int main(void) {
+    struct Process p[MAX], temp;
+    int n, i, time = 0, completed = 0, idx;
+    float total_tat = 0, total_wt = 0;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        printf("AT BT Priority of P%d: ", i+1);
+        scanf("%d%d%d", &p[i].at, &p[i].bt, &p[i].pr);
+        p[i].done = 0;
+    }
+    while (completed < n) {
+        idx = -1;
+        for (i = 0; i < n; i++) {
+            if (!p[i].done && p[i].at <= time) {
+                if (idx == -1 || p[i].pr < p[idx].pr ||
+                   (p[i].pr == p[idx].pr && p[i].at < p[idx].at))
+                    idx = i;
+            }
+        }
+        if (idx == -1) { time++; continue; }
+        time += p[idx].bt;
+        p[idx].ct = time;
+        p[idx].tat = p[idx].ct - p[idx].at;
+        p[idx].wt = p[idx].tat - p[idx].bt;
+        p[idx].done = 1;
+        completed++;
+    }
+    printf("\nPID\tAT\tBT\tPR\tCT\tTAT\tWT\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+          p[i].pid,p[i].at,p[i].bt,p[i].pr,p[i].ct,p[i].tat,p[i].wt);
+        total_tat += p[i].tat; total_wt += p[i].wt;
+    }
+    printf("Average TAT = %.2f\n", total_tat/n);
+    printf("Average WT = %.2f\n", total_wt/n);
+    return 0;
+}
+
+
+============================================================================
+
+Experiment 9B — Priority Scheduling — Preemptive (C)
+At every time unit, run the arrived process with the smallest priority number and positive remaining time.
+#include <stdio.h>
+#define MAX 20
+struct Process { int pid, at, bt, rt, pr, ct, tat, wt; };
+int main(void) {
+    struct Process p[MAX];
+    int n, i, time = 0, completed = 0, idx;
+    float total_tat = 0, total_wt = 0;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++) {
+        p[i].pid = i+1;
+        printf("AT BT Priority of P%d: ", i+1);
+        scanf("%d%d%d", &p[i].at, &p[i].bt, &p[i].pr);
+        p[i].rt = p[i].bt;
+    }
+    while (completed < n) {
+        idx = -1;
+        for (i = 0; i < n; i++) {
+            if (p[i].at <= time && p[i].rt > 0) {
+                if (idx == -1 || p[i].pr < p[idx].pr ||
+                   (p[i].pr == p[idx].pr && p[i].at < p[idx].at))
+                    idx = i;
+            }
+        }
+        if (idx == -1) { time++; continue; }
+        p[idx].rt--;
+        time++;
+        if (p[idx].rt == 0) {
+            p[idx].ct = time;
+            p[idx].tat = time - p[idx].at;
+            p[idx].wt = p[idx].tat - p[idx].bt;
+            total_tat += p[idx].tat;
+            total_wt += p[idx].wt;
+            completed++;
+        }
+    }
+    printf("\nPID\tAT\tBT\tPR\tCT\tTAT\tWT\n");
+    for (i = 0; i < n; i++)
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+          p[i].pid,p[i].at,p[i].bt,p[i].pr,p[i].ct,p[i].tat,p[i].wt);
+    printf("Average TAT = %.2f\n", total_tat/n);
+    printf("Average WT = %.2f\n", total_wt/n);
+    return 0;
+}
+
+
+============================================================================
+
+Experiment 10A — SJF Scheduling — Non-preemptive (C)
+Among arrived unfinished processes, select the smallest burst time and run it to completion.
+#include <stdio.h>
+struct Process { int pid, at, bt, ct, tat, wt, done; };
+int main(void) {
+    struct Process p[20];
+    int n, i, time = 0, completed = 0, idx;
+    float totalTAT = 0, totalWT = 0;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++) {
+        p[i].pid = i+1;
+        printf("Arrival Time and Burst Time for P%d: ", i+1);
+        scanf("%d%d", &p[i].at, &p[i].bt);
+        p[i].done = 0;
+    }
+    while (completed < n) {
+        idx = -1;
+        for (i = 0; i < n; i++) {
+            if (!p[i].done && p[i].at <= time &&
+               (idx == -1 || p[i].bt < p[idx].bt))
+                idx = i;
+        }
+        if (idx == -1) { time++; continue; }
+        time += p[idx].bt;
+        p[idx].ct = time;
+        p[idx].tat = p[idx].ct - p[idx].at;
+        p[idx].wt = p[idx].tat - p[idx].bt;
+        p[idx].done = 1;
+        completed++;
+        totalTAT += p[idx].tat;
+        totalWT += p[idx].wt;
+    }
+    printf("\nPID\tAT\tBT\tCT\tTAT\tWT\n");
+    for (i = 0; i < n; i++)
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n",
+          p[i].pid,p[i].at,p[i].bt,p[i].ct,p[i].tat,p[i].wt);
+    printf("Average TAT = %.2f\n", totalTAT/n);
+    printf("Average WT = %.2f\n", totalWT/n);
+    return 0;
+}
+
+
+============================================================================
+
+Experiment 10B — SJF Scheduling — Preemptive / SRTF (C)
+At each time unit, execute the arrived process with the shortest remaining time.
+#include <stdio.h>
+struct Process { int pid, at, bt, rt, ct, tat, wt; };
+int main(void) {
+    struct Process p[20];
+    int n, i, time = 0, completed = 0, idx;
+    float totalTAT = 0, totalWT = 0;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++) {
+        p[i].pid = i+1;
+        printf("Arrival Time and Burst Time for P%d: ", i+1);
+        scanf("%d%d", &p[i].at, &p[i].bt);
+        p[i].rt = p[i].bt;
+    }
+    while (completed < n) {
+        idx = -1;
+        for (i = 0; i < n; i++) {
+            if (p[i].at <= time && p[i].rt > 0 &&
+               (idx == -1 || p[i].rt < p[idx].rt))
+                idx = i;
+        }
+        if (idx == -1) { time++; continue; }
+        p[idx].rt--;
+        time++;
+        if (p[idx].rt == 0) {
+            p[idx].ct = time;
+            p[idx].tat = p[idx].ct - p[idx].at;
+            p[idx].wt = p[idx].tat - p[idx].bt;
+            totalTAT += p[idx].tat;
+            totalWT += p[idx].wt;
+            completed++;
+        }
+    }
+    printf("\nPID\tAT\tBT\tCT\tTAT\tWT\n");
+    for (i = 0; i < n; i++)
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n",
+          p[i].pid,p[i].at,p[i].bt,p[i].ct,p[i].tat,p[i].wt);
+    printf("Average TAT = %.2f\n", totalTAT/n);
+    printf("Average WT = %.2f\n", totalWT/n);
+    return 0;
+}
+
+
+============================================================================
+
+Experiment 11 — LRU Page Replacement (C)
+Use frames and a last-used timestamp to replace the least recently used page.
+#include <stdio.h>
+#define MAX 50
+int main(void) {
+    int frames, n, pages[MAX], frame[MAX], last[MAX];
+    int faults = 0, hits = 0, i, j;
+    printf("Enter number of frames: ");
+    scanf("%d", &frames);
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+    printf("Enter reference string: ");
+    for (i = 0; i < n; i++) scanf("%d", &pages[i]);
+    for (i = 0; i < frames; i++) {
+        frame[i] = -1;
+        last[i] = -1;
+    }
+    printf("\nPage\tFrames\t\tResult\n");
+    for (i = 0; i < n; i++) {
+        int found = 0, pos = -1;
+        for (j = 0; j < frames; j++) {
+            if (frame[j] == pages[i]) {
+                found = 1; pos = j; break;
+            }
+        }
+        if (found) {
+            hits++;
+            last[pos] = i;
+        } else {
+            int victim = 0;
+            faults++;
+            for (j = 0; j < frames; j++) {
+                if (frame[j] == -1) { victim = j; break; }
+                if (last[j] < last[victim]) victim = j;
+            }
+            frame[victim] = pages[i];
+            last[victim] = i;
+        }
+        printf("%d\t", pages[i]);
+        for (j = 0; j < frames; j++) {
+            if (frame[j] == -1) printf("- ");
+            else printf("%d ", frame[j]);
+        }
+        printf("\t%s\n", found ? "HIT" : "FAULT");
+    }
+    printf("Total Page Faults = %d\n", faults);
+    printf("Total Page Hits = %d\n", hits);
+    printf("Hit Ratio = %.2f\n", (float)hits/n);
+    printf("Fault Ratio = %.2f\n", (float)faults/n);
+    return 0;
+}
+
+
+============================================================================
+
+Experiment 12 — LRU Page Replacement (C++)
+C++ version of LRU. The manual's C++ listing uses arrays and a last-used index to select the victim.
+#include <iostream>
+using namespace std;
+int main() {
+    int n, framesCount = 4, pageFaults = 0, pageHits = 0;
+    cout << "Enter the number of pages: ";
+    cin >> n;
+    int pages[n];
+    cout << "Enter the page reference string: ";
+    for (int i = 0; i < n; i++) cin >> pages[i];
+    int frames[framesCount], lastUsed[framesCount];
+    int frameCount = 0;
+    for (int i = 0; i < framesCount; i++) {
+        frames[i] = -1;
+        lastUsed[i] = -1;
+    }
+    cout << "\nPage\tFrames\t\tStatus\n";
+    for (int i = 0; i < n; i++) {
+        int page = pages[i], found = 0;
+        for (int j = 0; j < frameCount; j++) {
+            if (frames[j] == page) {
+                found = 1;
+                lastUsed[j] = i;
+                break;
+            }
+        }
+        if (found) {
+            pageHits++;
+        } else {
+            pageFaults++;
+            if (frameCount < framesCount) {
+                frames[frameCount] = page;
+                lastUsed[frameCount] = i;
+                frameCount++;
+            } else {
+                int lruIndex = 0;
+                for (int j = 1; j < framesCount; j++)
+                    if (lastUsed[j] < lastUsed[lruIndex])
+                        lruIndex = j;
+                frames[lruIndex] = page;
+                lastUsed[lruIndex] = i;
+            }
+        }
+        cout << page << "\t";
+        for (int j = 0; j < frameCount; j++) cout << frames[j] << " ";
+        cout << "\t" << (found ? "Hit" : "Fault") << "\n";
+    }
+    cout << "\nTotal Page Hits: " << pageHits;
+    cout << "\nTotal Page Faults: " << pageFaults << "\n";
+    return 0;
+}
+Compile: g++ lru.cpp -o lru && ./lru. The source manual hard-codes four frames; this program retains that setup.
+Change framesCount if your instructor asks for a different frame count.
+
+
+============================================================================
+
+Experiment 14 — Process Synchronization — Pseudocode
+Your Experiment 14 manual specifically requests pseudocode with comments for three synchronization problems, not a C
+implementation.
+1. Producer–Consumer (bounded buffer of size 10)
+shared buffer[10]
+semaphore empty = 10
+semaphore full = 0
+semaphore mutex = 1
+PRODUCER:
+while true:
+    item = produce_order()
+    wait(empty)       // wait until a free slot exists
+    wait(mutex)       // enter critical section
+    insert item into buffer
+    signal(mutex)     // release shared buffer
+    signal(full)      // announce one available item
+CONSUMER:
+while true:
+    wait(full)        // wait until an order exists
+    wait(mutex)       // enter critical section
+    item = remove item from buffer
+    signal(mutex)     // release shared buffer
+    signal(empty)     // announce one free slot
+    prepare(item)
+2. Readers–Writers (reader-preference solution)
+shared int readCount = 0
+semaphore mutex = 1
+semaphore rw_mutex = 1
+READER:
+wait(mutex)
+readCount = readCount + 1
+if readCount == 1:
+    wait(rw_mutex)       // first reader blocks writers
+signal(mutex)
+read_database()
+wait(mutex)
+readCount = readCount - 1
+if readCount == 0:
+    signal(rw_mutex)     // last reader allows writers
+signal(mutex)
+WRITER:
+wait(rw_mutex)           // exclusive database access
+write_database()
+signal(rw_mutex)
+NOTE: This reader-preference version can cause writer starvation.
+3. Test-and-Set Lock (bank account critical section)
+shared boolean lock = false
+shared balance = 1000
+function TestAndSet(lock):
+    old = lock
+    lock = true
+    return old             // atomic operation
+THREAD_TRANSACTION(amount):
+    while TestAndSet(lock) == true:
+        ;                  // spin / busy wait
+    // Critical section: only one thread updates balance
+    balance = balance + amount
+    lock = false           // release lock
+    // Critical section ends
+Viva points: Producer–Consumer uses empty/full counting semaphores and mutex. Readers–Writers allows concurrent
+readers but exclusive writers. Test-and-Set is atomic; spinning is busy waiting and may starve a thread.
+
+
+============================================================================
+
+FINAL QUICK REVISION
+CPU scheduling formulas
+CT  = Completion Time
+TAT = CT - AT
+WT  = TAT - BT
+Average TAT = sum(TAT) / number of processes
+Average WT  = sum(WT) / number of processes
+FCFS: execute in arrival order.
+Priority: lowest priority number wins (as in your manual).
+SJF: choose shortest burst among arrived processes.
+SRTF: choose shortest remaining time at every time unit.
+LRU: replace the page that was used least recently.
+Useful C / C++ reminders
+scanf("%d", &x);       // read integer
+printf("%d", x);        // print integer
+for (i = 0; i < n; i++) // loop
+struct Process { ... }; // group process fields
+#include <stdio.h>      // C input/output
+#include <iostream>     // C++ input/output
+cin >> x; cout << x;    // C++ input/output
+Coverage note: Your uploaded set contains Experiments 2–12 and 14. No Experiment 13 manual was attached. Experiment
+2 is a list of shell commands, and Experiment 14 is a pseudocode assignment. This booklet does not invent a missing
+Experiment 13.
+
+
+============================================================================
+
